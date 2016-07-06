@@ -213,21 +213,44 @@ function deleteProduct(req,res)
             });
  }
 
+ function cloudUpload(req, res, callback){
+      var imgarray = [];
+            //var myImage = new MyImage();
+            var size = req.files.length
+            for(i=0; i<size;i++){
+            cloudinary.uploader.upload(req.files[i].path, function(req, res) { 
+                console.log("image upload");
+                imgarray.push(res.url);
+                console.log(res.url); 
+                
+            });
+            }
+            callback(imgarray);
+ }
+ 
 
  exports.createProduct = function(req, res){
  			console.log(req.body);
-      console.log(req.file);
-      console.log(req.file.path);
+      console.log(req.files);
+      console.log(req.files[0].path);
       //console.log(req.body.file.thumbnail);
       //console.log(req.body.price.value);
+      cloudUpload(req, res, function(imgarray){
             var product = new Product();
             var price = {};
-            //var myImage = new MyImage();
-            cloudinary.uploader.upload(req.file.path, function(req, res) { 
-                console.log("image upload");
-                
-                console.log(res.url); 
-            });
+            // var imgarray = [];
+          
+            // var size = req.files.length
+            // for(i=0; i<size;i++){
+            // cloudinary.uploader.upload(req.files[i].path, function(req, res) { 
+            //     console.log("image upload");
+            //     imgarray.push(res.url);
+            //     console.log(res.url); 
+            // });
+            // }
+            console.log("clodinary done");
+            console.log(imgarray);
+            console.log(imgarray[0]);
             item = req.body;
             product.name = item.name;
             product.description = item.description;
@@ -238,7 +261,7 @@ function deleteProduct(req,res)
             product.price = price;
             product.store = req.params.id;
             // myImage.imageLink = res.url;
-            // product.image = myImage.imageLink;
+            product.image = imgarray;
             //product.images = res.url;
             //product.created = new Date();
             //product.updated = new Date();
@@ -256,6 +279,7 @@ function deleteProduct(req,res)
               }
             });
             readProducts(req, res);
+          });
         //     createProduct(req.body, function(error,result){
         //                 if (error) {
         //         res.send({'result':'error'});

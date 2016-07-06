@@ -99,7 +99,7 @@ console.log("neelam");
 // app.get('/getDeleteForm', routes.getDeleteForm);
 
 app.get('/', routes.index);
-app.post('/createProduct/:id', multer({ dest: './uploads/'}).single('file'), routes.createProduct);
+app.post('/createProduct/:id', multer({ dest: './uploads/'}).array('file',3), routes.createProduct);
 app.post('/storePost', routes.createStoreData);
 app.get('/editProduct/:id', routes.editProductData);
 app.get('/ViewProductsPage/:id', routes.readProductsData);

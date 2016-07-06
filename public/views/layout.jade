@@ -7,12 +7,3 @@ html
 		script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.js')
 			
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js', integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS', crossorigin='anonymous')
-	body
-		div
-			button(onclick="addStore()") Add Store
-		each store in json
-			div
-				a(href="/editStore/#{store.id}") !{store.name}
-
-script.
-	function addStore() {window.location.href = '/storePostPage'}		
