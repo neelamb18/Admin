@@ -100,28 +100,30 @@ function deleteProduct(req,res)
 
  function cloudUpload(req, res, callback){
       var imgarray = [];
-            //var myImage = new MyImage();
-            var size = req.files.length
+            var size = req.files.length;
+            var counter = 0;
             for(i=0; i<size;i++){
             cloudinary.uploader.upload(req.files[i].path, function(req, res) { 
                 console.log("image upload");
                 imgarray.push(res.url);
-                console.log(res.url); 
-                
+                console.log(res.url);
+                counter = counter + 1;
+                console.log("initial counter" + counter);
+                if(counter == size){
+                  console.log(counter);
+                callback(imgarray);
+              }
             });
             }
-            callback(imgarray);
+            
  }
  
 
  exports.createProduct = function(req, res){
       console.log(req.files);
       console.log(req.files[0].path);
-      cloudUpload(req, res, function(error, imgarray){
-        if (error){
-          console.log("error");
-        }
-        else{
+      cloudUpload(req, res, function( imgarray){
+        
             var product = new Product();
             var price = {};
             console.log("clodinary done");
@@ -136,9 +138,7 @@ function deleteProduct(req,res)
             price.currency = "INR";
             product.price = price; 
             product.store = req.params.id;
-            product.image = imgarray;
-            //product.created = new Date();
-            //product.updated = new Date();
+            product.images = imgarray;
             console.log("creating data");
             console.log(product); 
             product.save(function (error,result) {
@@ -153,7 +153,7 @@ function deleteProduct(req,res)
               }
             });
             readProducts(req, res);
-          }
+          
           });
 
 }
@@ -164,14 +164,7 @@ function createStore(req, res){
   var address = {};
   item = req.body;
             store.name = item.name;
-            address.city = item.city;
-            address.doorno = item.doorno;
-            address.state = item.state;
-            address.country = item.country;
-            address.district = item.district;
-            address.zipcode = item.zipcode;
-            address.area = item.area;
-            address.locality = item.locality;
+            address = item;
             store.address = address;
             console.log(address);
             store.category = item.category.split(",");
