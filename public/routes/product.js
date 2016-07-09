@@ -259,9 +259,10 @@ exports.login = function(req, res){
     } else if (user) {
 
       // check if password matches
-      // if (user.password != req.body.password) {
-      //   res.json({ success: false, message: 'Authentication failed. Wrong password.' });
-      // } else {
+      user.comparePasswords(req.body.password, function(err, isMatch) {
+        if (!isMatch) {
+         res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+         } else {
 
         // if user is found and password is right
         // create a token
@@ -276,7 +277,8 @@ exports.login = function(req, res){
        res.cookie('auth',token);
           res.send('ok');
        //alert("user is logged in");
-     // }   
+        }
+       });   
       }
 
   });
