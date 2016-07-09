@@ -5,6 +5,8 @@ var app = express();
 var engines = require('consolidate');
 var cloudinary = require('cloudinary').v2;
 var multer = require('multer');
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 //var upload = multer({dest: './files/'});
 
 // var fs = require('fs');
@@ -21,17 +23,11 @@ cloudinary.config({
 });
 mongoose.Promise = require('bluebird');
 //assert.equal(query.exec().constructor, require('bluebird'));
- mongoose.connect("mongodb://localhost:27017/allProducts",function (err) {
+ mongoose.connect("mongodb://shop_dir:shop_dir@ds023912.mlab.com:23912/shoppins",function (err) {
   if (err) {
     console.log(err);
    }
  });
-
-
-// cloudinary.uploader.upload("/rakhi.jpg", function(req, res) { 
-// 	console.log("image upload");
-//   console.log(res.url); 
-// });
 
 app.set('views', __dirname + '/public/views');
 //app.engine('html', engines.mustache);
@@ -55,6 +51,10 @@ app.get('/storePostPage', function(req,res){
 	
 });
 
+app.get('/', function(req, res){
+	res.render('login.jade');
+});
+
 app.get('/editStore/:id', function(req,res){
 	//res.send('hello world');
 	console.log("store edit");
@@ -63,42 +63,25 @@ app.get('/editStore/:id', function(req,res){
 	
 });
 
+app.get('/signup', function(req, res){
+	res.render('signup.jade');
+});
 // app.get('/ViewProductsPage', function(req,res){
 // 	//res.send('hello world');
 // 	//console.log("Store is added");
 // 	res.render('showProducts.jade');
 	
-// });
-// app.post('/createProduct', multer({ dest: './uploads/'}).single('file'), function(req,res){
-// 	//res.send('hello world');
-// 	 console.log(req.file.path);
-// 	 console.log(req.body);
-// 	//res.render('AddProduct.html');
-// 	// var fstream;
-//  //    req.pipe(req.busboy);
-//  //    req.busboy.on('')
-//  //    req.busboy.on('file', function (fieldname, file, filename) {
-//  //        console.log("Uploading: " + filename); 
-//  //        console.log(fieldname);
-//  //        fstream = fs.createWriteStream(__dirname + '/files/' + filename);
-//  //        file.pipe(fstream);
-//  //        fstream.on('close', function () {
-//  //            res.redirect('back');
-//  //        });
-//  //    });
-// });
-
 
 /**
 *
 * Define the route handlers
 **/
 console.log("neelam");
-// app.get('/getCreateForm', routes.getCreateForm);
-// app.get('/getUpdateForm', routes.getUpdateForm);
-// app.get('/getDeleteForm', routes.getDeleteForm);
 
-app.get('/', routes.index);
+app.get('/index', routes.index);
+
+app.post('/signup', routes.signup);
+app.post('/login', routes.login);
 app.post('/createProduct/:id', multer({ dest: './uploads/'}).array('file',3), routes.createProduct);
 app.post('/storePost', routes.createStoreData);
 app.get('/editProduct/:id', routes.editProductData);

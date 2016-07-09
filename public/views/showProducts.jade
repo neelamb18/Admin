@@ -2,27 +2,8 @@ include ./layout.jade
 	body
 		h2 ProductList
 		//- img(src="http://res.cloudinary.com/shoppingdirectory/image/upload/v1467220670/ylpopjcqe9dkmm6iu1sx.jpg")
-		table
-			thead
-			th Product Name
-			th Product Description
-			th Product category
-			th Product subCategory
-			th Product Price
-			th Image
-			th edit?
-			th Delete?
-			tbody
-			each product in json
-				tr
-					td !{product.name}
-					td !{product.description}
-					td !{product.category}
-					td !{product.subCategory}
-					td !{product.price.value}
-					td 
-						img(src=product.image)
-					td 
-						a(href="/editProduct/#{product.id}") edit
-					td 
-						a(href="/deleteProduct/#{product.id}") Delete
+		each product in json
+			.col-md-4.col-sm-6.col-xs-12
+				h3 !{product.name}
+				img(src="#{product.images[0]}")
+				p <b>Price</b> !{product.price.value}

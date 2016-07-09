@@ -1,9 +1,15 @@
+var express = require('express');
+var app = express();
 var mongoose = require('mongoose');
 var cloudinary = require('cloudinary').v2;
 var models = require('./model');
 var Store = models.Store;
-var Product= models.Product;
-mongoose.createConnection("mongodb://localhost:27017/allProducts",function (err) {
+var Product = models.Product;
+var User = models.User;
+var cookieParser = require('cookie-parser');
+var jwt = require('jsonwebtoken');
+app.use(cookieParser())
+mongoose.createConnection("mongodb://shop_dir:shop_dir@ds023912.mlab.com:23912/shoppins",function (err) {
   if (err) {
     console.log(err);
   }
@@ -12,8 +18,16 @@ mongoose.createConnection("mongodb://localhost:27017/allProducts",function (err)
 });
 
 exports.index = function(req, res){
-  readStore(req, res);
+  authenticateUser(req, res, function(message){
+    if(message=="pass"){
+      readStore(req, res);
+    }
+    else
+      res.json({mes : 'authentication failed'});
+  })
+  
 }
+
 
 function readProducts(req, res)
 {
@@ -158,6 +172,34 @@ function deleteProduct(req,res)
 
 }
 
+function authenticateUser(req, res, callback){
+  var token = req.cookies.auth;
+  if (token) {
+    // verifies secret and checks exp
+    jwt.verify(token, 'shhhhhhared-secret', function(err, decoded) {      
+      if (err) {
+        var message = "fail";
+        callback(message);
+        //return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded; 
+        var message = "pass";
+        callback(message);   
+        //next();
+      }
+    });
+  } else {
+    // if there is no token
+    // return an error
+    return res.status(403).send({ 
+        success: false, 
+        message: 'No token provided.' 
+    });
+      }
+}
+
+exports.authenticate = authenticateUser;
 
 function createStore(req, res){
   var store = new Store();
@@ -184,6 +226,62 @@ function createStore(req, res){
             });
             readStore(req, res);
 }
+
+exports.signup = function(req, res){
+  
+  var user = new User();
+  user = req.body;
+  console.log(req.body);
+  //console.log(user);
+
+  user.save(function (error,result) {
+    if (error){
+                console.log("error" + error);
+              }
+              else{
+                
+                console.log("result");
+
+              }
+  });
+}
+
+exports.login = function(req, res){
+  console.log(req.body.name);
+  User.findOne({
+    email: req.body.name
+  }, function(err, user) {
+
+    if (err) throw err;
+    console.log(user);
+    if (!user) {
+      res.json({ success: false, message: 'Authentication failed. User not found.' });
+    } else if (user) {
+
+      // check if password matches
+      // if (user.password != req.body.password) {
+      //   res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+      // } else {
+
+        // if user is found and password is right
+        // create a token
+        var token = jwt.sign(user, 'shhhhhhared-secret', {
+          expiresIn: 1440 // expires in 24 hours
+        });
+      // res.json({
+      //     success: true,
+      //     message: 'Enjoy your token!',
+      //     token: token
+      //     });
+       res.cookie('auth',token);
+          res.send('ok');
+       //alert("user is logged in");
+     // }   
+      }
+
+  });
+}
+
 exports.createStoreData = createStore;
 exports.readProductsData = readProducts;
 exports.updateProductData = updateProduct;
