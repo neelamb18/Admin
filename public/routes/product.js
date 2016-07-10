@@ -87,6 +87,23 @@ function editProduct(req, res)
            
  }
 
+function editStore(req, res)
+{
+            console.log(req.params.id);
+            Store.findById(req.params.id,function (error, result) {
+              if (error){
+                console.log("error while reading");
+              }
+              else{
+                res.render('editStore',{json:result});
+                //res.json(result);
+                console.log(result);
+              }
+                
+            });
+           
+ }
+
 function updateProduct(req, res)
 {
             Product.findById(req.params.id, function (err, item) {
@@ -107,6 +124,36 @@ function updateProduct(req, res)
               }
             });
  }
+
+ function updateStore(req, res)
+{
+          cloudUpload(req, res, function( imgArray, imgArrayMin){
+            Store.findById(req.params.id, function (err, item) {
+              if (err){
+                        callback(err, null);
+              }
+              else {
+            item.name = req.body.name;
+            item.bannerImage = imgArray[0];
+            item.bannerImageMin = imgArrayMin[0];
+            // item.description = req.body.description;
+            // item.category = req.body.category;
+            // item.subCategory  = req.body.subCategory;
+            //item.price = res.price;
+                        item.save(function (err, result) {
+                          //callback(err, result);
+                          console.log("store updated");
+                          console.log(result);
+                          // readProducts(req, res);
+                          res.json(result);
+
+                        });
+              }
+            });
+          });
+ }
+
+
 
 function deleteProduct(req,res)
 {
@@ -315,6 +362,8 @@ exports.login = function(req, res){
 }
 
 exports.createStoreData = createStore;
+exports.updateStoreData = updateStore;
+exports.editStoreData = editStore;
 exports.readProductsData = readProducts;
 exports.updateProductData = updateProduct;
 exports.deleteProductData = deleteProduct;

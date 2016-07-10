@@ -65,13 +65,13 @@ app.get('/', function(req, res){
 	res.render('login.jade');
 });
 
-app.get('/editStore/:id', function(req,res){
-	//res.send('hello world');
-	console.log("store edit");
-	console.log(req.params.id);
-	res.render('editStore.jade',{storeid:req.params.id});
+// app.get('/editStore/:id', function(req,res){
+// 	//res.send('hello world');
+// 	console.log("store edit");
+// 	console.log(req.params.id);
+// 	res.render('editStore.jade',{storeid:req.params.id});
 	
-});
+// });
 
 app.get('/signup', function(req, res){
 	res.render('signup.jade');
@@ -94,6 +94,8 @@ app.post('/signup', routes.signup);
 app.post('/login', routes.login);
 app.post('/createProduct/:id', multer({ dest: './uploads/'}).array('file',3), routes.createProduct);
 app.post('/storePost', multer({ dest: './uploads/'}).array('file',3), routes.createStoreData);
+app.post('/updateStore/:id', multer({ dest: './uploads/'}).array('file',3), routes.updateStoreData);
+app.get('/editStore/:id', routes.editStoreData);
 app.get('/editProduct/:id', routes.editProductData);
 app.get('/ViewProductsPage/:id', routes.readProductsData);
 app.post('/updateProduct/:id', routes.updateProductData);

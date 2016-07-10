@@ -1,13 +1,20 @@
 include ./layout.jade
 	body
 		div
-			!{storeid}
 			button(onclick="AddProducts()") Add Products				
 			button(onclick="ViewProducts()") View Products				
 			button(onclick="UpdateProducts()") Update Products				
 			button(onclick="DeleteProducts()") Delete Products
+		div
+			form(action='/updateStore/#{json.id}', enctype="multipart/form-data", method='post')
+				div
+					input(type="text" name="name" value=json.name)
+				div
+					input(type="file" name="file" multiple)
+				div
+					button(type="update") Update
 script.
-	function AddProducts() {window.location.href = '/AddProductsPage/#{storeid}'}	
-	function ViewProducts() {window.location.href = '/ViewProductsPage/#{storeid}'}	
-	function UpdateProducts() {window.location.href = '/UpdateProductsPage/#{storeid}'}	
-	function DeleteProducts() {window.location.href = '/DeleteProductsPage/#{storeid}'}
+	function AddProducts() {window.location.href = '/AddProductsPage/#{json.id}'}	
+	function ViewProducts() {window.location.href = '/ViewProductsPage/#{json.id}'}	
+	function UpdateProducts() {window.location.href = '/UpdateProductsPage/#{json.id}'}	
+	function DeleteProducts() {window.location.href = '/DeleteProductsPage/#{json.id}'}
