@@ -5,6 +5,7 @@ var cloudinary = require('cloudinary').v2;
 var models = require('./model');
 var Store = models.Store;
 var Product = models.Product;
+var UserSearch = models.UserSearch;
 var User = models.User;
 var cookieParser = require('cookie-parser');
 var jwt = require('jsonwebtoken');
@@ -28,6 +29,18 @@ exports.index = function(req, res){
   
 }
 
+function saveSearchList(query,kind,location,req,res){
+  var userSearch = new UserSearch();
+    var delimiter = "#&#";
+    userSearch.userSearchString = query+delimiter+kind+delimiter+location;
+    console.log(query+delimiter+kind+delimiter+location);
+    userSearch.location = location;
+    userSearch.save(function(err){
+      if(err){
+        console.log(err)
+      }
+    });
+};
 
 function readProducts(req, res)
 {
@@ -113,21 +126,29 @@ function deleteProduct(req,res)
  }
 
  function cloudUpload(req, res, callback){
-      var imgarray = [];
+      var imgArray = [];
+      var imgArrayMin = [];
+            // console.log(req.file);
+            // console.log(req.files);
             var size = req.files.length;
             var counter = 0;
             for(i=0; i<size;i++){
-            cloudinary.uploader.upload(req.files[i].path, function(req, res) { 
+            cloudinary.uploader.upload(req.files[i].path, { eager: [
+              { width: 112, height: 112, crop: "pad" }
+             ]},
+                function(req, res) { 
                 console.log("image upload");
-                imgarray.push(res.url);
+                imgArray.push(res.url);
+                imgArrayMin.push(res.eager[0].url)
                 console.log(res.url);
                 counter = counter + 1;
                 console.log("initial counter" + counter);
                 if(counter == size){
                   console.log(counter);
-                callback(imgarray);
+                callback(imgArray, imgArrayMin);
               }
             });
+
             }
             
  }
@@ -136,13 +157,13 @@ function deleteProduct(req,res)
  exports.createProduct = function(req, res){
       console.log(req.files);
       console.log(req.files[0].path);
-      cloudUpload(req, res, function( imgarray){
+      cloudUpload(req, res, function( imgArray, imgArrayMin){
         
             var product = new Product();
             var price = {};
             console.log("clodinary done");
-            console.log(imgarray);
-            console.log(imgarray[0]);
+            console.log(imgArray);
+            console.log(imgArray[0]);
             item = req.body;
             product.name = item.name;
             product.description = item.description;
@@ -152,7 +173,8 @@ function deleteProduct(req,res)
             price.currency = "INR";
             product.price = price; 
             product.store = req.params.id;
-            product.images = imgarray;
+            product.images = imgArray;
+            product.imagesMin = imgArrayMin;
             console.log("creating data");
             console.log(product); 
             product.save(function (error,result) {
@@ -204,10 +226,13 @@ exports.authenticate = authenticateUser;
 function createStore(req, res){
   var store = new Store();
   var address = {};
+  cloudUpload(req, res, function( imgArray, imgArrayMin){
   item = req.body;
             store.name = item.name;
             address = item;
             store.address = address;
+            store.bannerImage = imgArray[0];
+            store.bannerImageMin = imgArrayMin[0];
             console.log(address);
             store.category = item.category.split(",");
             console.log(store.category);
@@ -221,10 +246,15 @@ function createStore(req, res){
               else{
                 
                 console.log("result");
+                saveSearchList(req.body.name,"store",address.city,req,res);
+                for (var i = store.category.length - 1; i >= 0; i--) {
+                    saveSearchList(store.category[i],"store-category",address.city,req,res);
+                 };
 
               }
             });
             readStore(req, res);
+          });
 }
 
 exports.signup = function(req, res){

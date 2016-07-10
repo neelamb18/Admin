@@ -29,6 +29,16 @@ mongoose.Promise = require('bluebird');
    }
  });
 
+// cloudinary.uploader.upload('download.jpg', { eager: [
+//         { width: 400, height: 300, crop: "pad" }, 
+//         { width: 260, height: 200, crop: "crop", gravity: "north"} ]},
+//         function(req, res) { 
+//                 console.log("eager upload");
+//                 console.log(res.url);
+//                 console.log(res.eager[0].url);
+//                 console.log(res.eager[1].url);
+//             });
+
 app.set('views', __dirname + '/public/views');
 //app.engine('html', engines.mustache);
 app.set('view engine', 'jade');
@@ -83,7 +93,7 @@ app.get('/index', routes.index);
 app.post('/signup', routes.signup);
 app.post('/login', routes.login);
 app.post('/createProduct/:id', multer({ dest: './uploads/'}).array('file',3), routes.createProduct);
-app.post('/storePost', routes.createStoreData);
+app.post('/storePost', multer({ dest: './uploads/'}).array('file',3), routes.createStoreData);
 app.get('/editProduct/:id', routes.editProductData);
 app.get('/ViewProductsPage/:id', routes.readProductsData);
 app.post('/updateProduct/:id', routes.updateProductData);

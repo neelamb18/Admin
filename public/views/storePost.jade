@@ -1,7 +1,7 @@
 include ./layout.jade
 	body
 		div
-			form(action='/storePost', method='post')
+			form(action='/storePost', enctype="multipart/form-data", method='post')
 				div
 					input(type="text" placeholder="name" name="name")
 				div
@@ -19,7 +19,9 @@ include ./layout.jade
 				div
 					input(type="text" placeholder="area" name="area")
 				div
-					input(type="text" placeholder="category" name="category")		
+					input(type="text" placeholder="category" name="category")
+				div
+					input(type="file" name="file" multiple)			
 				div
 					button(type="Submit") Submit
 		

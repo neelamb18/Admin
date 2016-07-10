@@ -5,5 +5,8 @@ include ./layout.jade
 		each product in json
 			.col-md-4.col-sm-6.col-xs-12
 				h3 !{product.name}
-				img(src="#{product.images[0]}")
+				img(src="#{product.imagesMin[0]}")
+				p <b>Description</b> !{product.Description}	
 				p <b>Price</b> !{product.price.value}
+				a(href="/editProduct/#{product.id}") edit
+				a(href="/deleteProduct/#{product.id}") Delete
