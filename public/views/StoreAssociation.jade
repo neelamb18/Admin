@@ -1,0 +1,11 @@
+include ./layout.jade
+	body
+		div
+			form(action='/association', method='post')
+				div
+					input(type="text" placeholder="email" name="email")
+				select(name="store")
+					each store in json	
+						option(value=store.id) !{store.name}
+				div
+					button(type="Submit") Submit

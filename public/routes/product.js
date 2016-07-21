@@ -56,19 +56,7 @@ function readProducts(req, res)
            
  }
 
-function readStore(req, res)
-{
-            Store.find({},function (error, result) {
-              if (error){
-                console.log("error while reading");
-              }
-              else{
-                res.render('index.jade',{json:result});
-              }
-                
-            });
-           
- }
+
 
 function editProduct(req, res)
 {
@@ -79,27 +67,9 @@ function editProduct(req, res)
             	}
             	else{
             		res.render('editProducts',{json:result});
-            		//res.json(result);
             		console.log(result);
             	}
               	
-            });
-           
- }
-
-function editStore(req, res)
-{
-            console.log(req.params.id);
-            Store.findById(req.params.id,function (error, result) {
-              if (error){
-                console.log("error while reading");
-              }
-              else{
-                res.render('editStore',{json:result});
-                //res.json(result);
-                console.log(result);
-              }
-                
             });
            
  }
@@ -125,34 +95,7 @@ function updateProduct(req, res)
             });
  }
 
- function updateStore(req, res)
-{
-          cloudUpload(req, res, function( imgArray, imgArrayMin){
-            Store.findById(req.params.id, function (err, item) {
-              if (err){
-                        callback(err, null);
-              }
-              else {
-            item.name = req.body.name;
-            item.bannerImage = imgArray[0];
-            item.bannerImageMin = imgArrayMin[0];
-            // item.description = req.body.description;
-            // item.category = req.body.category;
-            // item.subCategory  = req.body.subCategory;
-            //item.price = res.price;
-                        item.save(function (err, result) {
-                          //callback(err, result);
-                          console.log("store updated");
-                          console.log(result);
-                          // readProducts(req, res);
-                          res.json(result);
-
-                        });
-              }
-            });
-          });
- }
-
+ 
 
 
 function deleteProduct(req,res)
@@ -241,6 +184,7 @@ function deleteProduct(req,res)
 
 }
 
+
 function authenticateUser(req, res, callback){
   var token = req.cookies.auth;
   if (token) {
@@ -270,39 +214,7 @@ function authenticateUser(req, res, callback){
 
 exports.authenticate = authenticateUser;
 
-function createStore(req, res){
-  var store = new Store();
-  var address = {};
-  cloudUpload(req, res, function( imgArray, imgArrayMin){
-  item = req.body;
-            store.name = item.name;
-            address = item;
-            store.address = address;
-            store.bannerImage = imgArray[0];
-            store.bannerImageMin = imgArrayMin[0];
-            console.log(address);
-            store.category = item.category.split(",");
-            console.log(store.category);
-            console.log("creating store");
-            console.log(store); 
-            store.save(function (error,result) {
-              //callback(error, result);
-              if (error){
-                console.log("error" + error);
-              }
-              else{
-                
-                console.log("result");
-                saveSearchList(req.body.name,"store",address.city,req,res);
-                for (var i = store.category.length - 1; i >= 0; i--) {
-                    saveSearchList(store.category[i],"store-category",address.city,req,res);
-                 };
 
-              }
-            });
-            readStore(req, res);
-          });
-}
 
 exports.signup = function(req, res){
   
@@ -352,7 +264,7 @@ exports.login = function(req, res){
       //     token: token
       //     });
        res.cookie('auth',token);
-          res.send('ok');
+          res.render('index.jade', {json:user});
        //alert("user is logged in");
         }
        });   
@@ -361,9 +273,9 @@ exports.login = function(req, res){
   });
 }
 
-exports.createStoreData = createStore;
-exports.updateStoreData = updateStore;
-exports.editStoreData = editStore;
+
+
+
 exports.readProductsData = readProducts;
 exports.updateProductData = updateProduct;
 exports.deleteProductData = deleteProduct;

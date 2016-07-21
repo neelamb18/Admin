@@ -53,6 +53,7 @@ ReviewSchema.plugin(relationship, { relationshipPathName:'store' });
 ReviewSchema.plugin(relationship, { relationshipPathName:'product' });
 
 var UserSchema = new Schema({
+  storeId:[String],
   "firstName":String,
   "lastName":String,
   "email":String,
@@ -113,12 +114,15 @@ var StoreSchema = new Schema({
   name:String,
   address:Address,
   category:[String],
+  userEmail:String,
   reviews:[{ type:Schema.ObjectId, ref:"Review" }],
   products:[{ type:Schema.ObjectId, ref:"Product" }],
   upvotes:[{ type:Schema.ObjectId, ref:"Upvote" }],
   bannerImage:{type:String,default:'https://upload.wikimedia.org/wikipedia/commons/3/3a/SM_Department_Store_Cubao.jpg'},
   bannerImageMin:String,
   storeImages:[String],
+  collections:[String],
+  collectionsMin:[String],
   visits:[{ type:Schema.ObjectId, ref:"Visit" }]
 },{ collection : 'stores' });
 
@@ -133,7 +137,7 @@ var ProductSchema = new Schema({
   reviews:[{ type:Schema.ObjectId, ref:"Review" }],
   upvotes:[{ type:Schema.ObjectId, ref:"Upvote" }],
   images:[String],
-  imagesMin:[String],
+  imagesMin:[String],  
   store: { type:Schema.ObjectId, ref:"Store", childPath:"products" }
 });
 ProductSchema.plugin(relationship, { relationshipPathName:'store' });

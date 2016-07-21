@@ -9,13 +9,6 @@ var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 //var upload = multer({dest: './files/'});
 
-// var fs = require('fs');
-// var busboy = require('connect-busboy');
-// app.use(busboy());
- //app.use(express.methodOverride());
- //app.use(express.multipart());
-   
-
 cloudinary.config({
     cloud_name: 'shoppingdirectory',
     api_key: '967339527283183',
@@ -47,6 +40,7 @@ app.use(bodyParser.json()); //for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); //for parsing
 app.use(express.static(__dirname + '/public' ));
 var routes = require(__dirname +'/public/routes/product');
+var storeRoutes = require(__dirname +'/public/routes/store');
 app.get('/AddProductsPage/:id', function(req,res){
 	//res.send('hello world');
 	console.log(req.params.id);
@@ -65,43 +59,34 @@ app.get('/', function(req, res){
 	res.render('login.jade');
 });
 
-// app.get('/editStore/:id', function(req,res){
-// 	//res.send('hello world');
-// 	console.log("store edit");
-// 	console.log(req.params.id);
-// 	res.render('editStore.jade',{storeid:req.params.id});
-	
-// });
+
+app.get('/AddCollectionsPage', function(req, res){
+	res.render('addCollections.jade');
+});
+
 
 app.get('/signup', function(req, res){
 	res.render('signup.jade');
 });
-// app.get('/ViewProductsPage', function(req,res){
-// 	//res.send('hello world');
-// 	//console.log("Store is added");
-// 	res.render('showProducts.jade');
-	
 
-/**
-*
-* Define the route handlers
-**/
+app.post('/association', routes.association);
+
 console.log("neelam");
 
 app.get('/index', routes.index);
-
+app.get('/associateStore', storeRoutes.associateStore);
 app.post('/signup', routes.signup);
 app.post('/login', routes.login);
 app.post('/createProduct/:id', multer({ dest: './uploads/'}).array('file',3), routes.createProduct);
-app.post('/storePost', multer({ dest: './uploads/'}).array('file',3), routes.createStoreData);
-app.post('/updateStore/:id', multer({ dest: './uploads/'}).array('file',3), routes.updateStoreData);
-app.get('/editStore/:id', routes.editStoreData);
+app.post('/storePost', multer({ dest: './uploads/'}).array('file',3), storeRoutes.createStoreData);
+app.post('/updateStore/:id', multer({ dest: './uploads/'}).array('file',3), storeRoutes.updateStoreData);
+app.post('/addCollections/:id', multer({ dest: './uploads/'}).array('file',1000), storeRoutes.addCollections);
+app.get('/editStore/:id', storeRoutes.editStoreData);
 app.get('/editProduct/:id', routes.editProductData);
 app.get('/ViewProductsPage/:id', routes.readProductsData);
 app.post('/updateProduct/:id', routes.updateProductData);
 app.get('/deleteProduct/:id', routes.deleteProductData);
 console.log("bandaru");
-//app.get('/users', user.list);
 
 app.listen(3000,function(){
 	console.log(__dirname);

@@ -1,0 +1,18 @@
+include ./layout.jade
+	body
+		div
+			form(action='/createProduct/#{storeid}',enctype="multipart/form-data", method='post')
+				div
+					input(type="text" placeholder="name" name="name")
+				div
+					input(type="text" placeholder="description" name="description")
+				div
+					input(type="text" placeholder="category" name="category")
+				div 
+					input(type="text" placeholder="sub-category" name="subCategory")
+				div
+					input(type="text" placeholder="price" name="price")
+				div
+					input(type="file" name="file" multiple)
+				div
+					button(type="Submit") Submit

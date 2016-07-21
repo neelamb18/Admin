@@ -1,0 +1,8 @@
+include ./layout.jade
+	body
+		div
+			form(action='/addCollections/#{storeid}',enctype="multipart/form-data", method='post')
+				div
+					input(type="file" name="file" multiple)
+				div
+					button(type="Submit") Submit
