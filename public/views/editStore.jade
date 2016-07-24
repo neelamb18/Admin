@@ -6,6 +6,7 @@ include ./layout.jade
 			button(onclick="UpdateProducts()") Update Products				
 			button(onclick="DeleteProducts()") Delete Product
 			button(onclick="AddCollections()") Add Collections
+			button(onclick="ViewCollections()") View Collections
 		div
 			form(action='/updateStore/#{json.id}', enctype="multipart/form-data", method='post')
 				div
@@ -20,3 +21,4 @@ script.
 	function UpdateProducts() {window.location.href = '/UpdateProductsPage/#{json.id}'}	
 	function DeleteProducts() {window.location.href = '/DeleteProductsPage/#{json.id}'}
 	function AddCollections() {window.location.href = '/AddCollectionsPage/#{json.id}'}
+	function ViewCollections() {window.location.href = '/ViewCollectionsPage/#{json.id}'}

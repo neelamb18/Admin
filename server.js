@@ -7,12 +7,12 @@ var cloudinary = require('cloudinary').v2;
 var multer = require('multer');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
-//var upload = multer({dest: './files/'});
+var upload = multer({ dest: './uploads/'});
 
 cloudinary.config({
     cloud_name: 'shoppingdirectory',
     api_key: '967339527283183',
-    api_secret: '74NXckYl9m1-O0_ZTU8U_qoIDfw'
+    api_secret: '74NXckYl9m1-O0_ZTU8U_qoIDfw' 
 });
 mongoose.Promise = require('bluebird');
 //assert.equal(query.exec().constructor, require('bluebird'));
@@ -59,34 +59,29 @@ app.get('/', function(req, res){
 	res.render('login.jade');
 });
 
-
-app.get('/AddCollectionsPage', function(req, res){
-	res.render('addCollections.jade');
+app.get('/AddCollectionsPage/:id', function(req, res){
+	res.render('addCollections.jade',{storeid:req.params.id});
 });
-
 
 app.get('/signup', function(req, res){
 	res.render('signup.jade');
 });
 
-app.post('/association', routes.association);
-
-console.log("neelam");
+app.post('/association', storeRoutes.association);
 
 app.get('/index', routes.index);
 app.get('/associateStore', storeRoutes.associateStore);
-app.post('/signup', routes.signup);
 app.post('/login', routes.login);
-app.post('/createProduct/:id', multer({ dest: './uploads/'}).array('file',3), routes.createProduct);
-app.post('/storePost', multer({ dest: './uploads/'}).array('file',3), storeRoutes.createStoreData);
-app.post('/updateStore/:id', multer({ dest: './uploads/'}).array('file',3), storeRoutes.updateStoreData);
-app.post('/addCollections/:id', multer({ dest: './uploads/'}).array('file',1000), storeRoutes.addCollections);
+app.post('/createProduct/:id', upload.array('file',3), routes.createProduct);
+app.post('/storePost', upload.array('file',3), storeRoutes.createStoreData);
+app.post('/updateStore/:id', upload.array('file',3), storeRoutes.updateStoreData);
+app.post('/addCollections/:id', upload.array('file',1000), storeRoutes.addCollections);
+app.get('/ViewCollectionsPage/:id', storeRoutes.showCollections);
 app.get('/editStore/:id', storeRoutes.editStoreData);
 app.get('/editProduct/:id', routes.editProductData);
 app.get('/ViewProductsPage/:id', routes.readProductsData);
 app.post('/updateProduct/:id', routes.updateProductData);
 app.get('/deleteProduct/:id', routes.deleteProductData);
-console.log("bandaru");
 
 app.listen(3000,function(){
 	console.log(__dirname);

@@ -2,8 +2,9 @@ include ./layout.jade
 	body
 		div
 			button(onclick="addStore()") Add Store
-		div
-			a(href="/editStore/#{json.storeId}") !{json.storeId}
+		each id in json.storeId
+			div
+				a(href="/editStore/#{id}") !{id}
 
 script.
 	function addStore() {window.location.href = '/storePostPage'}		

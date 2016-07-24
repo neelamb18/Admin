@@ -9,31 +9,27 @@ var UserSearch = models.UserSearch;
 var User = models.User;
 var cookieParser = require('cookie-parser');
 var jwt = require('jsonwebtoken');
+var common = require('./common');
+
 app.use(cookieParser())
 mongoose.createConnection("mongodb://shop_dir:shop_dir@ds023912.mlab.com:23912/shoppins",function (err) {
   if (err) {
     console.log(err);
   }
-  else
-    console.log("db connection established");
 });
 
-function readStore(req, res)
-{
-            Store.find({},function (error, result) {
+function readStore(req, res){
+            Store.findById(req.params.id,function (error, result) {
               if (error){
                 console.log("error while reading");
               }
               else{
-                res.render('index.jade',{json:result});
-              }
-                
-            });
-           
+                res.render('showCollections.jade',{json:result});
+              }              
+            });          
  }
 
- function editStore(req, res)
-{
+ function editStore(req, res){
             console.log(req.params.id);
             Store.findById(req.params.id,function (error, result) {
               if (error){
@@ -43,15 +39,12 @@ function readStore(req, res)
                 res.render('editStore',{json:result});
                 //res.json(result);
                 console.log(result);
-              }
-                
-            });
-           
+              }                
+            });           
  }
 
-function updateStore(req, res)
-{
-          cloudUpload(req, res, function( imgArray, imgArrayMin){
+function updateStore(req, res){
+          common.cloudUpload(req, res, function( imgArray, imgArrayMin){
             Store.findById(req.params.id, function (err, item) {
               if (err){
                         callback(err, null);
@@ -70,45 +63,29 @@ function updateStore(req, res)
                           console.log(result);
                           // readProducts(req, res);
                           res.json(result);
-
                         });
               }
             });
           });
 }
 
-function cloudUpload(req, res, callback){
-      var imgArray = [];
-      var imgArrayMin = [];
-            // console.log(req.file);
-            // console.log(req.files);
-            var size = req.files.length;
-            var counter = 0;
-            for(i=0; i<size;i++){
-            cloudinary.uploader.upload(req.files[i].path, { eager: [
-              { width: 112, height: 112, crop: "pad" }
-             ]},
-                function(req, res) { 
-                console.log("image upload");
-                imgArray.push(res.url);
-                imgArrayMin.push(res.eager[0].url)
-                console.log(res.url);
-                counter = counter + 1;
-                console.log("initial counter" + counter);
-                if(counter == size){
-                  console.log(counter);
-                callback(imgArray, imgArrayMin);
-              }
-            });
-
-            }
-            
- }
+function saveSearchList(query,kind,location,req,res){
+  var userSearch = new UserSearch();
+    var delimiter = "#&#";
+    userSearch.userSearchString = query+delimiter+kind+delimiter+location;
+    console.log(query+delimiter+kind+delimiter+location);
+    userSearch.location = location;
+    userSearch.save(function(err){
+      if(err){
+        console.log(err)
+      }
+    });
+};
 
  function createStore(req, res){
   var store = new Store();
   var address = {};
-  cloudUpload(req, res, function( imgArray, imgArrayMin){
+  common.cloudUpload(req, res, function( imgArray, imgArrayMin){
   item = req.body;
             store.name = item.name;
             address = item;
@@ -125,38 +102,27 @@ function cloudUpload(req, res, callback){
               if (error){
                 console.log("error" + error);
               }
-              else{
-                
+              else{                
                 console.log("result");
                 saveSearchList(req.body.name,"store",address.city,req,res);
                 for (var i = store.category.length - 1; i >= 0; i--) {
                     saveSearchList(store.category[i],"store-category",address.city,req,res);
                  };
-
               }
             });
-            readStore(req, res);
+            res.json(result);
           });
 }
 
-exports.addCollections = function addCollections(req, res)
-{
-          cloudUpload(req, res, function( imgArray, imgArrayMin){
-            Store.findById(req.params.id, function (err, item) {
+exports.addCollections = function addCollections(req, res){
+          common.cloudUpload(req, res, function( imgArray, imgArrayMin){
+            Store.findByIdAndUpdate(req.params.id, {$push:{collections:{$each:imgArray},collectionsMin:{$each:imgArrayMin}}}, function (err, item) {
               if (err){
+
                         callback(err, null);
               }
               else {
-            item.collections = imgArray;
-            item.collectionsMin = imgArrayMin;
-                        item.save(function (err, result) {
-                          //callback(err, result);
-                          console.log("collections added successfully");
-                          console.log(result);
-                          // readProducts(req, res);
-                          res.json(result);
-
-                        });
+            console.log(item);
               }
             });
           });
@@ -171,34 +137,25 @@ exports.associateStore = function associateStore(req,res){
 
 exports.association = function association(req, res){
     
-    User.findOne({
+    User.findOneAndUpdate({
     email: req.body.email
-  }, function(err, user) {
+  }, {$push:{storeId:req.body.store}}, function(err, user) {
 
     if (err) throw err;
     console.log(user);
     if (!user) {
       res.json({ success: false, message: ' User not found.' });
     } else if (user) {
-        user.storeId = req.body.store;
-        user.save(function(err, result){
-          console.log(result);
-        });
+        console.log('the users storeid is updated');
+        console.log(user);
 
-        Store.findById(req.body.store, function (err, item) {
+        Store.findByIdAndUpdate(req.body.store, {$push:{userEmail:req.body.email}}, function (err, item) {
               if (err){
                         callback(err, null);
               }
               else {
-            item.userEmail = req.body.email;
-                        item.save(function (err, result) {
-                          //callback(err, result);
-                          console.log("admin added to store successfully");
-                          console.log(result);
-                          // readProducts(req, res);
-                          res.json(result);
-
-                        });
+                console.log("here comes the store updated");
+            res.json(item);
               }
             }); 
       }
@@ -209,3 +166,4 @@ exports.association = function association(req, res){
 exports.createStoreData = createStore;
 exports.updateStoreData = updateStore;
 exports.editStoreData = editStore;
+exports.showCollections = readStore;

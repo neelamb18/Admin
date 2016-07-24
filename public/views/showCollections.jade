@@ -1,0 +1,8 @@
+include ./layout.jade
+	body
+		h2 CollectionList
+		each collection in json.collections
+			.col-md-4.col-sm-6.col-xs-12
+				img(src="#{collection}")
+				p !{col}
+				a(href="/deleteCollection/#{json.id}") Delete
