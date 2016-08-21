@@ -12,7 +12,7 @@ var upload = multer({ dest: './uploads/'});
 cloudinary.config({
     cloud_name: 'shoppingdirectory',
     api_key: '967339527283183',
-    api_secret: '74NXckYl9m1-O0_ZTU8U_qoIDfw' 
+    api_secret: '74NXckYl9m1-O0_ZTU8U_qoIDfw'
 });
 mongoose.Promise = require('bluebird');
 //assert.equal(query.exec().constructor, require('bluebird'));
@@ -23,9 +23,9 @@ mongoose.Promise = require('bluebird');
  });
 
 // cloudinary.uploader.upload('download.jpg', { eager: [
-//         { width: 400, height: 300, crop: "pad" }, 
+//         { width: 400, height: 300, crop: "pad" },
 //         { width: 260, height: 200, crop: "crop", gravity: "north"} ]},
-//         function(req, res) { 
+//         function(req, res) {
 //                 console.log("eager upload");
 //                 console.log(res.url);
 //                 console.log(res.eager[0].url);
@@ -41,18 +41,18 @@ app.use(bodyParser.urlencoded({ extended: true })); //for parsing
 app.use(express.static(__dirname + '/public' ));
 var routes = require(__dirname +'/public/routes/product');
 var storeRoutes = require(__dirname +'/public/routes/store');
-app.get('/AddProductsPage/:id', function(req,res){
+app.get('/AddProductsPage/:id/:city', function(req,res){
 	//res.send('hello world');
 	console.log(req.params.id);
-	res.render('AddProduct.jade',{storeid:req.params.id});
-	
+	res.render('AddProduct.jade',{storeid:req.params.id,city:req.params.city});
+
 });
 
 app.get('/storePostPage', function(req,res){
 	//res.send('hello world');
 	console.log("Store is added");
 	res.render('storePost.jade');
-	
+
 });
 
 app.get('/', function(req, res){
@@ -72,7 +72,7 @@ app.post('/association', storeRoutes.association);
 app.get('/index', routes.index);
 app.get('/associateStore', storeRoutes.associateStore);
 app.post('/login', routes.login);
-app.post('/createProduct/:id', upload.array('file',3), routes.createProduct);
+app.post('/createProduct/:storeid/:city', upload.array('file',3), routes.createProduct);
 app.post('/storePost', upload.array('file',3), storeRoutes.createStoreData);
 app.post('/updateStore/:id', upload.array('file',3), storeRoutes.updateStoreData);
 app.post('/addCollections/:id', upload.array('file',1000), storeRoutes.addCollections);
@@ -86,6 +86,3 @@ app.get('/deleteProduct/:id', routes.deleteProductData);
 app.listen(3000,function(){
 	console.log(__dirname);
 });
-
-
-

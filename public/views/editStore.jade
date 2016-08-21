@@ -16,7 +16,7 @@ include ./layout.jade
 				div
 					button(type="update") Update
 script.
-	function AddProducts() {window.location.href = '/AddProductsPage/#{json.id}'}	
+	function AddProducts() {window.location.href = '/AddProductsPage/#{json.id}/#{json.address.city}'}	
 	function ViewProducts() {window.location.href = '/ViewProductsPage/#{json.id}'}	
 	function UpdateProducts() {window.location.href = '/UpdateProductsPage/#{json.id}'}	
 	function DeleteProducts() {window.location.href = '/DeleteProductsPage/#{json.id}'}
