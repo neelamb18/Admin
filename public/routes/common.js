@@ -57,6 +57,20 @@ function cloudUpload(req, res, callback){
       }
 }
 
+function saveSearchList(query,kind,location,req,res){
+  var userSearch = new UserSearch();
+    var delimiter = "#&#";
+    userSearch.userSearchString = query+delimiter+kind+delimiter+location;
+    console.log(query+delimiter+kind+delimiter+location);
+    userSearch.location = location;
+    userSearch.save(function(err){
+      if(err){
+        console.log(err)
+      }
+    });
+};
+
 
 exports.authenticateUser = authenticateUser;
-exports.cloudUpload = cloudUpload
+exports.cloudUpload = cloudUpload;
+exports.saveSearchList = saveSearchList;

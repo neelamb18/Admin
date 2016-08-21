@@ -91,18 +91,21 @@ function deleteProduct(req,res){
  exports.createProduct = function(req, res){
       console.log(req.files);
       console.log(req.files[0].path);
+      var product = new Product();
+      var price = {};
+      city_name = "";
       common.cloudUpload(req, res, function( imgArray, imgArrayMin){
         
-            var product = new Product();
-            var price = {};
+            
             console.log("clodinary done");
             console.log(imgArray);
             console.log(imgArray[0]);
             item = req.body;
-            product = item;
-            // product.description = item.description;
-            // product.category = item.category;
-            // product.subCategory = item.subCategory;
+            //product = item;
+            product.name = item.name;
+            product.description = item.description;
+            product.category = item.category;
+            product.subCategory = item.subCategory;
             price.value = item.price;
             price.currency = "INR";
             product.price = price; 
@@ -112,11 +115,14 @@ function deleteProduct(req,res){
             console.log("creating data");
             console.log(product); 
             product.save(function (error,result) {
-              if (error){
-              	console.log("error" + error);
+              if (error){ 
+              	console.log("error" + error);  
               }
               else{              	
               	console.log("result");
+                common.saveSearchList(item.name.toLowerCase(),"product",city_name,req,res);
+                common.saveSearchList(item.category.toLowerCase(),"product-category",city_name,req,res);
+                common.saveSearchList(item.subCatgeory.toLowerCase(),"product-subcategory",city_name,req,res);
               }
             });
             readProducts(req, res);          

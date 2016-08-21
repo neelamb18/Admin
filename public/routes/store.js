@@ -69,19 +69,6 @@ function updateStore(req, res){
           });
 }
 
-function saveSearchList(query,kind,location,req,res){
-  var userSearch = new UserSearch();
-    var delimiter = "#&#";
-    userSearch.userSearchString = query+delimiter+kind+delimiter+location;
-    console.log(query+delimiter+kind+delimiter+location);
-    userSearch.location = location;
-    userSearch.save(function(err){
-      if(err){
-        console.log(err)
-      }
-    });
-};
-
  function createStore(req, res){
   var store = new Store();
   var address = {};
@@ -104,9 +91,9 @@ function saveSearchList(query,kind,location,req,res){
               }
               else{                
                 console.log("result");
-                saveSearchList(req.body.name,"store",address.city,req,res);
+                common.saveSearchList(req.body.name,"store",address.city,req,res);
                 for (var i = store.category.length - 1; i >= 0; i--) {
-                    saveSearchList(store.category[i],"store-category",address.city,req,res);
+                    saveSearchList(store.category[i].toLowerCase(),"store-category",address.city,req,res);
                  };
               }
             });

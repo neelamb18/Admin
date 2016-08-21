@@ -53,7 +53,7 @@ ReviewSchema.plugin(relationship, { relationshipPathName:'store' });
 ReviewSchema.plugin(relationship, { relationshipPathName:'product' });
 
 var UserSchema = new Schema({
-  storeId:[String],
+  storeId:[{ type:Schema.ObjectId, ref:"Store" }],
   "firstName":String,
   "lastName":String,
   "email":String,
@@ -154,7 +154,7 @@ ProductSchema.plugin(mongoosePaginate);
 
 exports.UserSearch = mongoose.model('UserSearch',UserSearchSchema);
 exports.Store = mongoose.model('Store',StoreSchema);
-exports.Product = mongoose.model("Product", ProductSchema);
+exports.Product = mongoose.model('Product',ProductSchema);
 exports.User = User;
 exports.Review = Review;
 exports.Visit = Visit;
