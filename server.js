@@ -15,44 +15,28 @@ cloudinary.config({
     api_secret: '74NXckYl9m1-O0_ZTU8U_qoIDfw'
 });
 mongoose.Promise = require('bluebird');
-//assert.equal(query.exec().constructor, require('bluebird'));
  mongoose.connect("mongodb://shop_dir:shop_dir@ds023912.mlab.com:23912/shoppins",function (err) {
   if (err) {
     console.log(err);
    }
  });
 
-// cloudinary.uploader.upload('download.jpg', { eager: [
-//         { width: 400, height: 300, crop: "pad" },
-//         { width: 260, height: 200, crop: "crop", gravity: "north"} ]},
-//         function(req, res) {
-//                 console.log("eager upload");
-//                 console.log(res.url);
-//                 console.log(res.eager[0].url);
-//                 console.log(res.eager[1].url);
-//             });
-
 app.set('views', __dirname + '/public/views');
 //app.engine('html', engines.mustache);
 app.set('view engine', 'jade');
-
 app.use(bodyParser.json()); //for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); //for parsing
 app.use(express.static(__dirname + '/public' ));
+
 var routes = require(__dirname +'/public/routes/product');
 var storeRoutes = require(__dirname +'/public/routes/store');
-app.get('/AddProductsPage/:id/:city', function(req,res){
-	//res.send('hello world');
-	console.log(req.params.id);
-	res.render('AddProduct.jade',{storeid:req.params.id,city:req.params.city});
 
+app.get('/AddProductsPage/:id/:city', function(req,res){
+	res.render('AddProduct.jade',{storeid:req.params.id,city:req.params.city});
 });
 
 app.get('/storePostPage', function(req,res){
-	//res.send('hello world');
-	console.log("Store is added");
 	res.render('storePost.jade');
-
 });
 
 app.get('/', function(req, res){
@@ -68,7 +52,6 @@ app.get('/signup', function(req, res){
 });
 
 app.post('/association', storeRoutes.association);
-
 app.get('/index', routes.index);
 app.get('/associateStore', storeRoutes.associateStore);
 app.post('/login', routes.login);
