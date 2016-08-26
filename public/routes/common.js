@@ -18,14 +18,10 @@ function cloudUpload(req, res, callback){
               { width: 112, height: 112, crop: "pad" }
              ]},
                 function(req, res) {
-                console.log("image upload");
                 imgArray.push(res.url);
                 imgArrayMin.push(res.eager[0].url)
-                console.log(res.url);
                 counter = counter + 1;
-                console.log("initial counter" + counter);
                 if(counter == size){
-                  console.log(counter);
                 callback(imgArray, imgArrayMin);
               }
             });
@@ -63,15 +59,13 @@ function saveSearchList(query,kind,location,req,res){
   var userSearch = new UserSearch();
     var delimiter = "#&#";
     userSearch.userSearchString = query+delimiter+kind+delimiter+location;
-    console.log(query+delimiter+kind+delimiter+location);
     userSearch.location = location;
-    userSearch.save(function(err){
+    userSearch.save(function(err,result){
       if(err){
         console.log(err)
       }
     });
 };
-
 
 exports.authenticateUser = authenticateUser;
 exports.cloudUpload = cloudUpload;

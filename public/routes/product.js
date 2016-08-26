@@ -40,14 +40,12 @@ function readProducts(req, res){
  }
 
 function editProduct(req, res){
-            console.log(req.params.id);
             Product.findById(req.params.id,function (error, result) {
             	if (error){
             		console.log("error while reading");
             	}
             	else{
             		res.render('editProducts',{json:result});
-            		console.log(result);
             	}
             });
  }
@@ -58,14 +56,9 @@ function updateProduct(req, res){
                         callback(err, null);
               }
               else {
-            item = req.body;
-            // item.description = req.body.description;
-            // item.category = req.body.category;
-            // item.subCategory  = req.body.subCategory;
-            //item.price = res.price;
+                        item = req.body;
                         item.save(function (err, result) {
                           //callback(err, result);
-                          console.log("item updated");
                           readProducts(req, res);
                         });
               }
@@ -73,35 +66,24 @@ function updateProduct(req, res){
  }
 
 function deleteProduct(req,res){
-			console.log(req.params.id);
             Product.findById(req.params.id, function (err, item) {
               if (err){
                         console.log("error");
               }
               else {
                         Product.remove(item,function (err, result) {
-                        	console.log("item deleted");
                         	readProducts(req, res);
-                          //callback(err, result);
                         });
               }
             });
  }
 
  exports.createProduct = function(req, res){
-      console.log(req.files);
-      console.log(req.files[0].path);
       var product = new Product();
       var price = {};
       city_name = "";
       common.cloudUpload(req, res, function( imgArray, imgArrayMin){
-
-
-            console.log("clodinary done");
-            console.log(imgArray);
-            console.log(imgArray[0]);
             item = req.body;
-            //product = item;
             product.name = item.name;
             product.description = item.description;
             product.category = item.category;
@@ -109,17 +91,14 @@ function deleteProduct(req,res){
             price.value = item.price;
             price.currency = "INR";
             product.price = price;
-            product.store = req.params.id;
+            product.store = req.params.storeid;
             product.images = imgArray;
             product.imagesMin = imgArrayMin;
-            console.log("creating data");
-            console.log(product);
             product.save(function (error,result) {
               if (error){
               	console.log("error" + error);
               }
               else{
-              	console.log("result");
                 common.saveSearchList(item.name.toLowerCase(),"product",req.params.city,req,res);
                 common.saveSearchList(item.category.toLowerCase(),"product-category",req.params.city,req,res);
                 common.saveSearchList(item.subCategory.toLowerCase(),"product-subcategory",req.params.city,req,res);
@@ -130,39 +109,30 @@ function deleteProduct(req,res){
 }
 
 exports.login = function(req, res){
-  console.log(req.body.name);
   User.findOne({
     email: req.body.name
   }, function(err, user) {
-
     if (err) throw err;
-    console.log(user);
     if (!user) {
       res.json({ success: false, message: 'Authentication failed. User not found.' });
     } else if (user) {
-
       // check if password matches
       user.comparePasswords(req.body.password, function(err, isMatch) {
         if (!isMatch) {
          res.json({ success: false, message: 'Authentication failed. Wrong password.' });
          } else {
-
         // if user is found and password is right
         // create a token
         var token = jwt.sign(user, 'shhhhhhared-secret', {
           expiresIn: 1440 // expires in 24 hours
         });
-
        res.cookie('auth',token);
-          res.render('index.jade', {json:user});
-       //alert("user is logged in");
+       res.render('index.jade', {json:user});
         }
        });
       }
-
   });
 }
-
 exports.readProductsData = readProducts;
 exports.updateProductData = updateProduct;
 exports.deleteProductData = deleteProduct;
