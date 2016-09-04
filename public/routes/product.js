@@ -91,20 +91,43 @@ function deleteProduct(req,res){
             price.value = item.price;
             price.currency = "INR";
             product.price = price;
-            product.store = req.params.storeid;
+
+            product.store = mongoose.Types.ObjectId(req.params.storeid);
             product.images = imgArray;
             product.imagesMin = imgArrayMin;
-            product.save(function (error,result) {
-              if (error){
-              	console.log("error" + error);
-              }
-              else{
-                common.saveSearchList(item.name.toLowerCase(),"product",req.params.city,req,res);
-                common.saveSearchList(item.category.toLowerCase(),"product-category",req.params.city,req,res);
-                common.saveSearchList(item.subCategory.toLowerCase(),"product-subcategory",req.params.city,req,res);
-              }
-            });
-            readProducts(req, res);
+            Store.findById(mongoose.Types.ObjectId(req.params.storeid),function(err,store){
+				if(err){
+					console.log("inside save of product");
+					//res.send(err);
+					console.log(err);
+
+				}
+				else{
+
+					//res.send(stores);
+					city_name = store.address.city;
+          product.address =  store.address;
+				}
+		})
+		product.save(function(err){
+			if(err){
+				if(err.code == 11000){
+					return res.json({success:false,'message':'Product already exists'});
+				}
+				else{
+					console.log(err);
+					return res.send(err);
+
+				}
+			}
+
+			common.saveSearchList(item.name.toLowerCase(),"product",city_name,req,res);
+			common.saveSearchList(item.category.toLowerCase(),"product-category",city_name,req,res);
+			common.saveSearchList(item.subCategory.toLowerCase(),"product-subcategory",city_name,req,res);
+			//res.json({message:"Product created"});
+		});
+
+	            readProducts(req, res);
           });
 }
 

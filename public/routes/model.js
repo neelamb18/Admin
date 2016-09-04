@@ -126,6 +126,7 @@ var ProductSchema = new Schema({
   category:String,
   subCategory:String,
   price:Price,
+  address:Address,
   sizesAvailable:String,
   reviews:[{ type:Schema.ObjectId, ref:"Review" }],
   upvotes:[{ type:Schema.ObjectId, ref:"Upvote" }],
